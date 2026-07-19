@@ -1,0 +1,826 @@
+{
+  "name": "*workflow-name* — by Vhiraj P",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 📰 Automated News Carousel Poster\n\n**Created by Vhiraj P**\n\nScrapes news → renders image cards → posts Instagram carousels on a schedule.\n\nSee the README for setup instructions and required placeholders.",
+        "height": 200,
+        "width": 380,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -752,
+        -400
+      ],
+      "id": "credit-sticky-note-vhiraj-p",
+      "name": "Credit"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        288,
+        -112
+      ],
+      "id": "f7cb512e-1c1f-41c4-a803-a66b7e838b0d",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        464,
+        48
+      ],
+      "id": "eb5edba1-a3e1-45fe-a603-b3f353e99d08",
+      "name": "Link By Link"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "ogImage",
+              "cssSelector": "meta[property=\"og:image\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "ogDescription",
+              "cssSelector": "meta[property=\"og:description\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "bodyText",
+              "cssSelector": "div[data-test-id=\"text\"] p",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        128
+      ],
+      "id": "c2d0d400-18ac-4a12-80f9-d965993e0eec",
+      "name": "Extract Data"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1104,
+        -128
+      ],
+      "id": "186b8f04-3e6a-433c-84e3-9d61ca8abe9a",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -576,
+        -112
+      ],
+      "id": "f73ecc5a-ae03-4bba-9024-32b0aba7a2a7",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v23.0",
+        "node": "*instagram-business-account-id*",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "image_url",
+                "value": "={{ $json.secure_url }}"
+              },
+              {
+                "name": "caption",
+                "value": "=Hi"
+              },
+              {
+                "name": "is_carousel_item",
+                "value": "True"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        -144
+      ],
+      "id": "b5744c59-caf1-4d30-b4e8-4e53c7e21160",
+      "name": "Instagram Container ID",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "*credential-id*",
+          "name": "*facebook-graph-credential-name*"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2496,
+        -144
+      ],
+      "id": "c2090d91-ed94-4267-8fef-9697e6a273f9",
+      "name": "Wait",
+      "webhookId": "*webhook-id*"
+    },
+    {
+      "parameters": {
+        "url": "*website-listing-page-url*",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -240,
+        -112
+      ],
+      "id": "e2923c90-0754-4c57-8137-1323c71f1652",
+      "name": "Reach DailyThanthi"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "headline",
+              "cssSelector": "div[data-test-id=\"headline\"] h3",
+              "returnArray": true
+            },
+            {
+              "key": "articleLinks",
+              "cssSelector": "div[data-test-id=\"headline\"] a",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        -112
+      ],
+      "id": "f9107879-2987-49cf-b78b-54627ba10168",
+      "name": "Extract Content"
+    },
+    {
+      "parameters": {
+        "jsCode": "const headlines = $input.first().json.headline;\nconst links = $input.first().json.articleLinks;\n\nconst seen = new Set();\nconst result = [];\n\nfor (let i = 0; i < links.length; i++) {\n  const url = links[i];\n  if (!seen.has(url)) {\n    seen.add(url);\n    result.push({\n      json: {\n        title: Array.isArray(headlines) ? headlines[i] : null,\n        url: url\n      }\n    });\n  }\n}\n\nreturn result;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        -112
+      ],
+      "id": "d27d07bf-93f0-4e62-8a17-439feba441e8",
+      "name": "Format Content"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst paragraphs = $input.first().json.bodyText;\nlet text = Array.isArray(paragraphs) ? paragraphs.join(' ') : paragraphs;\n\n// Strip URLs (plain and bracketed [https://...] formats)\ntext = text.replace(/\\[?(https?:\\/\\/[^\\s\\]\\n]+)\\]?/g, '');\n\n// Clean up leftover extra spaces/newlines from the removal\ntext = text.replace(/[ \\t]{2,}/g, ' ').replace(/\\n{2,}/g, '\\n').trim();\n\nreturn [{\n  json: {\n    text: text,\n    ogImage: item.ogImage,\n    ogDescription: $('Loop Over Items').first().json.title\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        192
+      ],
+      "id": "b57baaf3-53c0-40e5-97ec-dc268653a89c",
+      "name": "Format"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -128
+      ],
+      "id": "9029ff30-9ccc-4333-bcf9-5b8bc5c055b5",
+      "name": "Join all News as 1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $json.data.map(article => ({\n  json: article\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        -128
+      ],
+      "id": "8e390201-4330-475b-af50-4f0c12b127e6",
+      "name": "Seperate them"
+    },
+    {
+      "parameters": {
+        "jsCode": "const article = $input.first().json;\n\nconst text = article.text || \"\";\nconst image = article.ogImage || \"\";\nconst description = article.ogDescription || \"\";\n\nconst html = `\n<!DOCTYPE html>\n<html lang=\"ta\">\n<head>\n<meta charset=\"UTF-8\">\n\n<link href=\"https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;700;800&display=swap\" rel=\"stylesheet\">\n\n<style>\n\n*{\n    box-sizing:border-box;\n}\n\nbody{\n    margin:0;\n    width:1080px;\n    height:1350px;\n    overflow:hidden;\n    font-family:'Noto Sans Tamil',sans-serif;\n\n    background:\n        linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.65)),\n        url('${image}') center center / cover no-repeat;\n\n    display:flex;\n    justify-content:center;\n    align-items:center;\n}\n\n.card{\n    width:900px;\n    background:#fff;\n    border-radius:35px;\n    overflow:hidden;\n    box-shadow:0 20px 70px rgba(0,0,0,.45);\n}\n\n.image{\n    width:100%;\n    height:500px;\n    object-fit:cover;\n}\n\n.badge{\n    display:inline-block;\n    margin:25px;\n    padding:12px 24px;\n    background:#ff3b30;\n    color:#fff;\n    font-size:24px;\n    font-weight:bold;\n    border-radius:999px;\n}\n\n.title{\n    padding:0 30px;\n    font-size:44px;\n    font-weight:800;\n    line-height:1.3;\n    color:#111827;\n}\n\n.summary{\n    padding:30px;\n    font-size:28px;\n    line-height:1.6;\n    color:#444;\n}\n\n.footer{\n    background:#111827;\n    color:white;\n    padding:20px;\n    text-align:center;\n    font-size:22px;\n}\n\n</style>\n\n</head>\n\n<body>\n\n<div class=\"card\">\n\n<img class=\"image\" src=\"${image}\" />\n\n<div class=\"badge\">📰 BREAKING NEWS</div>\n\n<div class=\"title\">\n${description}\n</div>\n\n<div class=\"summary\">\n${text.substring(0,700)}...\n</div>\n\n<div class=\"footer\">\n*footer-brand-name*\n</div>\n\n</div>\n\n</body>\n</html>\n`;\n\nreturn [\n  {\n    json: {\n      html\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        32
+      ],
+      "id": "d0ef6b17-df0e-48ea-8268-4a59d1393b65",
+      "name": "Create HTML File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "*gotenberg-api-url*/forms/chromium/screenshot/html",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "format",
+              "value": "png"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1632,
+        192
+      ],
+      "id": "92a1c6ea-d481-4e78-adac-eb4835d89c71",
+      "name": "Take Screenshot"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "html",
+        "options": {
+          "fileName": "index.html"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1456,
+        128
+      ],
+      "id": "2b2de5dd-e3ba-4829-916b-8414fa7aef29",
+      "name": "Rename"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/*cloudinary-cloud-name*/image/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "upload_preset",
+              "value": "*cloudinary-upload-preset*"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1488,
+        -144
+      ],
+      "id": "cf12b9ce-b8fb-400e-822d-35b8ece0626e",
+      "name": "Save To Cloud"
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1776,
+        -144
+      ],
+      "id": "63368f4a-6846-4b21-bb01-6c036101e23a",
+      "name": "Create posts with 10 news each"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        -144
+      ],
+      "id": "88823ca8-801c-4cb2-93cd-cdfe05741bf1",
+      "name": "Join for Carousel"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v23.0",
+        "node": "*instagram-business-account-id*",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "media_type",
+                "value": "Carousel"
+              },
+              {
+                "name": "children",
+                "value": "={{ $json.id.join(',') }} "
+              },
+              {
+                "name": "caption",
+                "value": "=\n{{ $('Code in JavaScript').item.json.message }}\n.\n*caption-footer-text-and-hashtags-go-here*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        2336,
+        -144
+      ],
+      "id": "fd362c57-3d1e-46fa-a438-e23134c84994",
+      "name": "Get Creation ID",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "*credential-id*",
+          "name": "*facebook-graph-credential-name*"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v23.0",
+        "node": "*instagram-business-account-id*",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $('Get Creation ID').item.json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        2656,
+        -144
+      ],
+      "id": "64910f3c-0987-4751-b7eb-a7d0bc7d78d6",
+      "name": "Post Ceation ID",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "*credential-id*",
+          "name": "*facebook-graph-credential-name*"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputDate = new Date( $input.first().json.currentDate); // replace with your actual field name\n\n// Convert to IST (UTC+5:30) regardless of server timezone\nconst istOffset = 5.5 * 60 * 60 * 1000;\nconst utcTime = inputDate.getTime() + (inputDate.getTimezoneOffset() * 60 * 1000);\nconst istTime = new Date(utcTime + istOffset);\n\n// Round to nearest 5 minutes\nlet minutes = istTime.getMinutes();\nlet roundedMinutes = Math.round(minutes / 5) * 5;\nif (roundedMinutes === 60) {\n  istTime.setHours(istTime.getHours() + 1);\n  roundedMinutes = 0;\n}\nistTime.setMinutes(roundedMinutes);\n\n// Format date: \"July 19, 2026\"\nconst dateStr = istTime.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });\n\n// Format time: 12-hour with AM/PM\nlet hours = istTime.getHours();\nconst ampm = hours >= 12 ? 'PM' : 'AM';\nhours = hours % 12;\nhours = hours === 0 ? 12 : hours;\nconst minStr = roundedMinutes.toString().padStart(2, '0');\nconst timeStr = `${hours}:${minStr} ${ampm}`;\n\nconst finalMessage = `The news updates for ${dateStr} at ${timeStr}`;\n\nreturn [{ json: { message: finalMessage } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -112
+      ],
+      "id": "ece98510-1768-4554-8ff6-188ffb9a6cf2",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2816,
+        -144
+      ],
+      "id": "cae7a6cc-51c3-408f-90bf-373a0c413e2c",
+      "name": "Wait1",
+      "webhookId": "*webhook-id*"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -752,
+        -112
+      ],
+      "id": "29b307f2-41d3-4c2e-9323-ebc4a1c88dd3",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Join all News as 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Link By Link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Link By Link": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Save To Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create HTML File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram Container ID": {
+      "main": [
+        [
+          {
+            "node": "Join for Carousel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Post Ceation ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reach DailyThanthi": {
+      "main": [
+        [
+          {
+            "node": "Extract Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Content": {
+      "main": [
+        [
+          {
+            "node": "Format Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Content": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Join all News as 1": {
+      "main": [
+        [
+          {
+            "node": "Seperate them",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seperate them": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create HTML File": {
+      "main": [
+        [
+          {
+            "node": "Rename",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Take Screenshot": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename": {
+      "main": [
+        [
+          {
+            "node": "Take Screenshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save To Cloud": {
+      "main": [
+        [
+          {
+            "node": "Create posts with 10 news each",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create posts with 10 news each": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Instagram Container ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Join for Carousel": {
+      "main": [
+        [
+          {
+            "node": "Get Creation ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Creation ID": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Ceation ID": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Reach DailyThanthi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Create posts with 10 news each",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "timeSavedPerExecution": 30
+  },
+  "versionId": "*version-id*",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "*instance-id*"
+  },
+  "id": "*workflow-id*",
+  "tags": []
+}
